@@ -5,7 +5,6 @@
 #include "tusb.h"
 #include "ws2812.pio.h"
 #include "hardware/pio.h"
-// #include "usb_hid_keys.h"
 
 void pin_setup(void);
 void scan_matrix_and_report(void);
@@ -51,7 +50,6 @@ const uint8_t key_map[4][4] = {{HID_KEY_A, HID_KEY_B, HID_KEY_C, HID_KEY_D}, {HI
 
 bool led_map[4][4] = {0};
 static volatile bool matrix_changed = false;
-// static volatile bool key_pressed = false;
 
 const uint ENC_SW = 1;
 const uint ENC_A = 2;
@@ -106,16 +104,10 @@ int main()
         tud_task();
         scan_matrix_and_report(); // where matrix_changed can be assigned false;
         LED_BRIGHTNESS();
-       // adjusted_brightness = 20;
         if (!isLedsOff()) without_touch();
-       // led_ALL_ON();
         if (isLedsOff()) led_turn();
         sleep_ms(5);
 
-       
-       
-       //led_ALL_ON();
-       // led_turn();
         hue = (hue + 1) % 360;
         matrix_changed = false;
      
@@ -162,7 +154,6 @@ void led_turn(){
         for (int c = 0; c < 4; c++){
             int index = (c % 2 == 0) ? 4 * c + r : 4 * c + (3 - r);
             if (led_map[r][c]){
-               // leds[index] = (adjusted_brightness << 16) | (adjusted_brightness << 8) | (adjusted_brightness << 0);
                leds[index] = hsv_to_rgb(hue % 360);
             } 
         }
@@ -205,10 +196,6 @@ void without_touch(){
     for (int i = 0; i < LED_COUNT; i++){
         put_pixel(pio, sm, leds[i]);
     }
-
-    //hue = (hue + 1) % 360;
-    
-    //sleep_ms(35);
 }
 
 uint32_t hsv_to_rgb(int hue){
@@ -304,7 +291,6 @@ void scan_matrix_and_report(){
             for (int c = 0; c < 4; c++){
                 // if columns are pulled down, and its not already in key_tracking, that means its been chosen...
                 if (!gpio_get(col_pins[c]) && !key_tracking[r][c]){
-                  //  key_pressed = true;
                     // Set key tracking to true. 
                     key_tracking[r][c] = true;
                     led_map[r][c] = true;
@@ -335,7 +321,6 @@ void scan_matrix_and_report(){
                             break;
                         }
                     }
-                //    key_pressed = false;
 
                     key_tracking[r][c] = false;
                     led_map[r][c] = false;
@@ -351,7 +336,6 @@ void scan_matrix_and_report(){
      if (matrix_changed)
     if (tud_hid_ready()){
         tud_hid_keyboard_report(0, modified, active_keys);
-     //   matrix_changed = false;
      } 
 }
 
