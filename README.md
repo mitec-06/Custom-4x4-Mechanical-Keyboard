@@ -1,9 +1,6 @@
 # Custom 4x4 Keyboard PCB Design
 
-Custom 4x4 mechanical keyboard PCB featuring USB HID firmware on RP2040, addressable RGB LEDs (SK6812) driven via PIO
-state machine, rotary encoder brightness control, and HSV color animation functions.
-
-Add explanation & KiCAD diagrams later...
+This project is a custom 4x4 mechanical keyboard PCB featuring USB HID firmware on RP2040, addressable RGB LEDs (SK6812) driven via PIO state machine, rotary encoder brightness control, and HSV color animation functions.
 
 ## Functions
 
@@ -43,6 +40,8 @@ Add explanation & KiCAD diagrams later...
 - 3.3V to 5V level shifting for LED data signal via SN74LV1T34
 
 - Daisy-chained SK6812 MINI-E LEDs driven via RP2040 PIO state machine.
+
+- RP2040 PIO state machine - Dedicated programmable Input/Output handles precise WS2812 timing independent of CPU timing.
 
 - WS2812 protocol followed to ensure correct latch reset timing.
 
