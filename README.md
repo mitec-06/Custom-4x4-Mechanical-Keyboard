@@ -61,6 +61,8 @@ Primarily worked on keyboard research, and drafting the schematic and pcb. Once 
 
 Ordered the first batch of PCBs from PCBWay, and begun soldering the first prototype, however several hardware bugs prevented the LEDs from functioning properly, causing odd behavior, and allowing only the typing to work.
 
+![First Prototype](hardware/old_keyboard_v1.jpg)
+
 ### June 2026 - July 2026
 Managed to get the first four LEDs of the board working, with the other 12 not functioning properly.
 
@@ -75,6 +77,10 @@ Ultimately, the DIN/DOUT pins were finally oriented correctly, and a new batch o
 Assembled and soldered the new functioning PCBs, which finally had all 16 LEDs turn on properly. In this time period, the rest of the firmware was added, including the logic for the HSV color transition, the ring-like HSV color animation, the logic for the LED brightness dimming, etc.
 
 In this time period, the case of the PCB was modelled using OnShape, and 3D printed, being assembled towards the end of this project, and ultimately yielding the final keyboard product. :)
+
+![Keyboard Front](hardware/keyboard_v1_front.jpg)
+
+![Keyboard Back](hardware/keyboard_v1_back.jpg.jpg)
 
 ## Future Improvements
 

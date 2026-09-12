@@ -19,7 +19,6 @@ bool isLedsOff();
 
 bool key_tracking[4][4] = {false};
 uint8_t modified = 0;
-// debouncing algo
 
 // define keymap here, declare const uint8_t keymap[4][4] = {...} HID_KEY_A, HID_KEY_B, 
 // also define a local 6 byte storage array to track which keys are being sent to the computer 
@@ -62,9 +61,7 @@ uint32_t leds[LED_COUNT];
 // add two helper functions, look through active keys, find the first slot that equals 0, set it to the scancode, and break
 // the other helper function is looking through active keys, and finding the slot that equals the scancode, removing it and breaking
 
-// something along the lines of uint8_code code = keymap[r][c]
-// add_key_to_report(code)
-// then push it to pc with tud_hid_keyboard_report(REPORT_ID_KEYBOARD, modifiers, active_keys);
+
 PIO pio = pio0;
 uint sm = 0;
 
@@ -94,12 +91,15 @@ int main()
     ws2812_program_init(pio, sm, offset, 0, 800000, false);
 
     adjusted_brightness = (int)(led_brightness * 255.0/ 100.0);
-    
+    // initial brightness setup
 
     while (true) {
-        // In here, use check conditions and a for loop to check for each column, if a row is 0, then a key is pressed.
-        // set it as gpio_put(..) and gpio_set(..) to put everything back.
-        
+
+        // scanning is analyzed first, if the keyboard is in an idle state, without_touch() is called
+        // else, led_turn is called, and tries to detect the rotary encoder turn...
+
+        // a hardware delay of 5 seconds is also implemented to make sure that the rotary encoder and LEDs work without any bugs..
+        // hue is also incremented here, and matrix_changed is reset to false after running all the functions
 
         tud_task();
         scan_matrix_and_report(); // where matrix_changed can be assigned false;
@@ -114,6 +114,8 @@ int main()
     }
 }
 
+// The following four functions are debugging functions used earlier to test whether
+// the hardware was capable of turning on the LEDs in the first place.
 bool isLedsOff(){
     for(int i = 0; i < 4; i++){
         for (int j = 0; j < 4; j++){
@@ -168,14 +170,16 @@ void led_turn(){
 void without_touch(){
     int offset = 15;
 
-    // ring1
+    // Ring system
+
+    // ring1, innermost 4 leds
 
     leds[5] = hsv_to_rgb(hue % 360);
     leds[6] = hsv_to_rgb(hue % 360);
     leds[9] = hsv_to_rgb(hue % 360);
     leds[10] = hsv_to_rgb(hue % 360);
 
-    // ring 2
+    // ring 2, next outward 8 leds
 
     leds[1] = hsv_to_rgb((hue-offset + 360) % 360);
     leds[2] = hsv_to_rgb((hue-offset + 360) % 360);
@@ -186,7 +190,7 @@ void without_touch(){
     leds[13] = hsv_to_rgb((hue-offset + 360) % 360);
     leds[14] = hsv_to_rgb((hue-offset + 360) % 360);
 
-    // ring 3
+    // ring 3, the corners of the keyboard
 
     leds[0] = hsv_to_rgb((hue - (2 * offset) + 360) % 360);
     leds[3] = hsv_to_rgb((hue - (2 * offset) + 360) % 360);
@@ -200,6 +204,7 @@ void without_touch(){
 
 uint32_t hsv_to_rgb(int hue){
 
+// if hue is less than zero, pure red is sent to the leds
 if (hue < 0) return (adjusted_brightness << 16) | (0 << 8) | (0 << 0);;
 int segment = hue / 60;
 int remainder = hue % 60;
@@ -208,7 +213,7 @@ int rising = remainder * 255/60;
 int falling = (255 - remainder * 255/60);
 
 
-
+// based on what segment the hue calculates to be, changes which color byte is losing/gaining value, creating a cycle.
 if (segment == 0) return (adjusted_brightness << 16) | ((adjusted_brightness * rising / 255) << 8) | (0 << 0);
 else if (segment == 1) return ((adjusted_brightness * falling / 255) << 16) | (adjusted_brightness << 8) | (0 << 0);
 else if (segment == 2) return (0 << 16) | (adjusted_brightness << 8) | ((adjusted_brightness * rising / 255) << 0);
@@ -245,7 +250,7 @@ void LED_BRIGHTNESS(){
             }
             else led_brightness++; // CW
         }
-        // calc for adjusted brightness, it is cast into an int and then sent for the led to change its brightness
+        // calculate for adjusted brightness, it is cast into an int and then sent for the led to change its brightness
         adjusted_brightness = (int)(led_brightness * 255.0/ 100.0);
         }
     }
@@ -272,9 +277,6 @@ void pin_setup(){
         gpio_set_dir(row_pins[i], GPIO_OUT);
         gpio_set_dir(col_pins[i], GPIO_IN);
     }
-    
-    // put an interupt to save power  gpio_set_irq_enabled_with_callback()
-    // set later: gpio_set_irq_enabled_with_callback();
 }
 
 
