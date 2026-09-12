@@ -80,8 +80,6 @@ In this time period, the case of the PCB was modelled using OnShape, and 3D prin
 
 ![Keyboard Front](hardware/keyboard_v1_front.jpg)
 
-![Keyboard Back](hardware/keyboard_v1_back.jpg.jpg)
-
 ## Future Improvements
 
 - Most notably, while assembling/soldering check more frequently whether the parts assembled have the right voltage/behavior using tools such as oscilloscopes or multimeters.
